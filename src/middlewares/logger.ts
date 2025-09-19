@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
-import { sendToMonitoring } from "../utils/monitoring"; 
+import { sendToMonitoring } from "../lib/utils/monitoring";
+import { redactSensitiveFields } from "../lib/helper";
 
 const logFile = path.join(__dirname, "../../logs/app.log");
 
@@ -12,40 +13,30 @@ function logToFile(data: object) {
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const start = process.hrtime();
   const requestId = Date.now() + "-" + Math.random().toString(36).slice(2, 8);
-
-  const safeBody = { ...req.body };
-  ["password", "token", "creditCard"].forEach((field) => {
-    if (safeBody[field as keyof typeof safeBody]) {
-      safeBody[field as keyof typeof safeBody] = "***REDACTED***";
-    }
-  });
-
-  const logRequest = {
-    timestamp: new Date().toISOString(),
-    level: "info",
-    requestId,
-    method: req.method,
-    url: req.originalUrl,
-    body: safeBody,
-  };
-
-  logToFile(logRequest);
-  sendToMonitoring(logRequest);
+  const safeBody = redactSensitiveFields(req.body);
+  const timeRequest = new Date().toISOString()
+  const url = req.originalUrl
+  const body= safeBody
+  const method = req.method
 
   res.on("finish", () => {
     const diff = process.hrtime(start);
     const durationMs = diff[0] * 1000 + diff[1] / 1e6;
 
-    const logResponse = {
-      timestamp: new Date().toISOString(),
+    const logRequest = {
+      timeRequest,
+      url,
+      body,
+      method,
+      timeResponse: new Date().toISOString(),
       level: durationMs > 1000 ? "warn" : "info",
       requestId,
       status: res.statusCode,
       durationMs,
     };
 
-    logToFile(logResponse);
-    sendToMonitoring(logResponse);
+    logToFile(logRequest);
+    sendToMonitoring(logRequest);
   });
 
   next();

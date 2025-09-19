@@ -7,7 +7,7 @@ router.post("/checkout", async (req: Request, res: Response) => {
     const { userId, amount } = req.body;
 
     // Simulasi proses payment
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     res.status(200).json({
       success: true,
