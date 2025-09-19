@@ -85,7 +85,6 @@ project-root/
 │   ├── lib/              → helper untuk log file dan monitoring
 │   ├── app.ts            → setup Express app dan register middleware
 │   └── server.ts         → entry point server
-├── logs/                 → file log tersimpan di sini
 ├── tsconfig.json
 ├── package.json
 ├── package-lock.json
