@@ -71,7 +71,7 @@ d. Gunakan async/await untuk track request lifetime.
 
 **Project:** Express.js Logging Middleware (TypeScript)
 
-**Tujuan:** Middleware untuk mencatat log request & response, tracking durasi request, menandai request >1 detik, dan menyaring field sensitif sebelum disimpan.
+**Tujuan:** Middleware untuk mencatat log request, tracking durasi request, menandai request >1 detik, dan menyaring field sensitif sebelum disimpan.
 
 **Struktur folder:**
 
